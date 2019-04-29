@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class Scheduler {
     private int[][] Z = {
             {3, 5},
@@ -9,12 +11,15 @@ public class Scheduler {
     private int bestItem[] = new int[Z[0].length];
     private int count = 0;
     private int totalCost = 0;
+    private LinkedList<Integer>[] bestItems;
 
     public static void main(String[] args) {
         new Scheduler();
     }
 
     private Scheduler() {
+        generateQueues();
+
         // at the beginning no items are added
         for (int i=0; i<added.length; i++)
             added[i] = false;
@@ -31,8 +36,12 @@ public class Scheduler {
             //  1. change the 'added' flag
             //  2. add its cost to the total cost
             //  3. update the cost of other items in the same factory
+            System.out.printf("Picked item %d with cost %d\n", bestItem[bestFactory], Z[bestItem[bestFactory]][bestFactory]);
             added[bestItem[bestFactory]] = true;
             totalCost += Z[bestItem[bestFactory]][bestFactory];
+            updateCosts(bestFactory, Z[bestItem[bestFactory]][bestFactory]);
+
+            // must review which one is the best item to produce now
             updateBestItem(bestFactory);
 
             // one more item added
@@ -43,8 +52,28 @@ public class Scheduler {
         System.out.println("Best avg cost: " + ((double) totalCost)/count);
     }
 
+    private void generateQueues() {
+        // for every factory
+        for (int f=0; f<Z[0].length; f++) {
+
+            // make a sorted list of item indices
+            LinkedList<Integer> list = new LinkedList<>();
+            list.add(0);
+
+            for (int i=1; i<Z.length; i++)
+                for (int pos=0; i<list.size(); pos++)
+                    if (Z[list.get(pos)][f] > Z[i][f])
+                        list.add(pos, i);
+
+            // and put the list in the array of lists
+            bestItems[f] = list;
+        }
+    }
+
     private void updateBestItem(int factory) {
         int leastCost = 0;
+        while (added[leastCost])
+            leastCost++;
 
         for (int item=1; item<Z.length; item++)
             if (!added[item])
@@ -68,5 +97,10 @@ public class Scheduler {
         }
 
         return indexLeastCost;
+    }
+
+    private void updateCosts(int factory, int increment) {
+        for (int i=0; i<Z.length; i++)
+            Z[i][factory] += increment;
     }
 }
