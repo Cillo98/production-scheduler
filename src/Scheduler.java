@@ -1,64 +1,65 @@
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 public class Scheduler {
-//    private int[][] Z = {
-//            {1, 5, 4, 1, 3},
-//            {4, 7, 20, 2, 4},
-//            {2, 3, 9, 3, 5},
-//            {3, 4, 15, 4, 2}
-//    };
-    private int[][] Z;
-    //    private int[][] Z = {
-//            {1, 100, 100},
-//            {99, 1, 99},
-//            {98, 1, 98}
-//    };
-    private boolean[] added;
-    private LinkedList<Integer>[] bestItems;
+    // INPUT RELATED DATA
+    private int[][] Z;      // cost matrix
+    private int tests;      // number of tests
+
+    // ALGORITHM DATA
+    private boolean[] added;                    // list of produced products
+    private LinkedList<Integer>[] bestItems;    // best item to produce for each factory
+
+    private IO io;                              // file reader
 
     // waiting time for each factory
     private int[] W;
 
     public static void main(String[] args) {
-        new Scheduler();
+        if (args.length < 1) {
+            System.out.println("Error: invalid arguments. Must include 1 argument: the filename");
+            return;
+        }
+        new Scheduler(args[0]);
     }
 
-    private Scheduler() {
-        String filename = "data.txt";
+    private Scheduler(String filename) {
         try {
-            // instantiate the file reader
-            IO io = new IO(filename);
+            init(filename);
 
-            // read the number of tests
-            int tests = io.getTestCases();
+            for (int test=0; test < tests; test++) {
+                // load the data of this test
+                Z = io.getTestMatrix(test);
+                W = new int[Z[0].length];
+                added = new boolean[Z.length];
 
-            for (int test = 0; test < tests; test++) {
-                System.out.printf("Test %d has %d items in %d factories\n",
-                        test, io.getItemNumber(test), io.getFactoryNumber(test));
+                // initialize best items
+                bestItems = new LinkedList[Z[0].length];
+                generateQueues();
+
+                // run the test
+                double avg = test();
+                System.out.printf("Test: %d\tAverage Cost: %.6f\n", test, avg);
             }
-
-            Z = io.getTestMatrix(1);
-            W = new int[Z[0].length];
-            added = new boolean[Z.length];
 
         } catch (IOException e) {
             System.out.printf("Error loading file. Make sure it is '%s'", filename);
-            return;
         }
+    }
 
-        // initialize best items
-        bestItems = (LinkedList<Integer>[]) new LinkedList[Z[0].length];
-        generateQueues();
+    private void init(String filename) throws IOException {
+        // instantiate the file reader
+        io = new IO(filename);
 
-        // at the beginning no items are added
-        for (int i = 0; i < added.length; i++)
-            added[i] = false;
+        // get number of tests
+        tests = io.getTestCases();
+    }
 
+    private double test() {
         int totalCost = 0;
+
         for (int i = 0; i < Z.length; i++) {
             // review which one is the best item to produce for each factory
             updateBestItems();
@@ -74,13 +75,9 @@ public class Scheduler {
             added[item] = true;
             W[bestFactory] += Z[item][bestFactory]; // time to make item in bestFactory
             totalCost += W[bestFactory];
-
-            // log
-            System.out.printf("Picked item %d,%d with cost %d\n", item, bestFactory, W[bestFactory]);
         }
 
-        System.out.println("Best tot cost: " + totalCost);
-        System.out.printf("Best avg cost: %.6f", ((double) totalCost) / Z.length);
+        return ((double) totalCost) / Z.length;
     }
 
     private void generateQueues() {
