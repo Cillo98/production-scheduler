@@ -11,11 +11,9 @@ public class Scheduler {
     // ALGORITHM DATA
     private boolean[] added;                    // list of produced products
     private LinkedList<Integer>[] bestItems;    // best item to produce for each factory
+    private int[] W;                            // waiting time for each factory
 
-    private IO io;                              // file reader
-
-    // waiting time for each factory
-    private int[] W;
+    private IO io;          // file reader
 
     public static void main(String[] args) {
         if (args.length < 1) {
