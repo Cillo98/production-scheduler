@@ -106,8 +106,4 @@ public class Scheduler {
 
         return indexLeastCost;
     }
-
-    private void updateCosts(int factory, int increment) {
-        W[factory] += increment;
-    }
 }
