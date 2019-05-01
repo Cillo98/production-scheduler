@@ -2,13 +2,21 @@ import java.util.*;
 
 public class Scheduler {
     private int[][] Z = {
-            {3, 5},
-            {4, 7},
-            {2, 3},
-            {3, 4}
+            {1, 5, 4, 1, 3},
+            {4, 7, 20, 2, 4},
+            {2, 3, 9, 3, 5},
+            {3, 4, 15, 4, 2}
     };
+//    private int[][] Z = {
+//            {1, 100, 100},
+//            {99, 1, 99},
+//            {98, 1, 98}
+//    };
     private boolean[] added = new boolean[Z.length];
     private LinkedList<Integer>[] bestItems;
+
+    // waiting time for each factory
+    private int[] W = new int[Z[0].length];
 
     public static void main(String[] args) {
         new Scheduler();
@@ -36,21 +44,21 @@ public class Scheduler {
 
             // produce the item. to produce it, do:
             //  1. change the 'added' flag
-            //  2. add its cost to the total cost
-            //  3. update the cost of other items in the same factory
+            //  2. update the total production time of the factory
+            //  3. add its cost to the total cost
             added[item] = true;
-            totalCost += Z[item][bestFactory];
-            updateCosts(bestFactory, Z[item][bestFactory]);
+            W[bestFactory] += Z[item][bestFactory]; // time to make item in bestFactory
+            totalCost += W[bestFactory];
 
             // one more item added
             count++;
 
             // log
-            System.out.printf("Picked item %d with cost %d\n", item, Z[item][bestFactory]);
+            System.out.printf("Picked item %d,%d with cost %d\n", item, bestFactory, W[bestFactory]);
         }
 
         System.out.println("Best tot cost: " + totalCost);
-        System.out.println("Best avg cost: " + ((double) totalCost)/ count);
+        System.out.printf("Best avg cost: %.6f", ((double) totalCost)/ count);
     }
 
     private void generateQueues() {
@@ -89,10 +97,10 @@ public class Scheduler {
 
         // check every factory to pick the factory who
         // can make the next item the fastest
-        for (int i=0; i<bestItems.length; i++) {
-            if (Z[bestItems[i].get(0)][i] < leastCost) {
-                leastCost = Z[bestItems[i].get(0)][i];
-                indexLeastCost = i;
+        for (int f=0; f<bestItems.length; f++) {
+            if (Z[bestItems[f].get(0)][f] + W[f] < leastCost) {
+                leastCost = Z[bestItems[f].get(0)][f] + W[f];
+                indexLeastCost = f;
             }
         }
 
@@ -100,7 +108,6 @@ public class Scheduler {
     }
 
     private void updateCosts(int factory, int increment) {
-        for (int i=0; i<Z.length; i++)
-            Z[i][factory] += increment;
+        W[factory] += increment;
     }
 }
