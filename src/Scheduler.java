@@ -31,10 +31,8 @@ public class Scheduler {
         for (int i=0; i<added.length; i++)
             added[i] = false;
 
-        //private int bestItem[] = new int[Z[0].length];
-        int count = 0;
         int totalCost = 0;
-        while (count < Z.length) {
+        for (int i = 0; i < Z.length; i++) {
             // review which one is the best item to produce for each factory
             updateBestItems();
 
@@ -50,15 +48,12 @@ public class Scheduler {
             W[bestFactory] += Z[item][bestFactory]; // time to make item in bestFactory
             totalCost += W[bestFactory];
 
-            // one more item added
-            count++;
-
             // log
             System.out.printf("Picked item %d,%d with cost %d\n", item, bestFactory, W[bestFactory]);
         }
 
         System.out.println("Best tot cost: " + totalCost);
-        System.out.printf("Best avg cost: %.6f", ((double) totalCost)/ count);
+        System.out.printf("Best avg cost: %.6f", ((double) totalCost)/ Z.length);
     }
 
     private void generateQueues() {
@@ -88,7 +83,7 @@ public class Scheduler {
     private void updateBestItems() {
         for (LinkedList<Integer> itemsQueue : bestItems)
             while (added[itemsQueue.get(0)])
-                itemsQueue.remove(0);
+                itemsQueue.pop();
     }
 
     private int getBestFactory() {
