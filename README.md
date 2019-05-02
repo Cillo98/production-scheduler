@@ -69,31 +69,32 @@ Once the input data is loaded, the algorithm takes the following steps for each 
     4. Output the average production cost for the items picked
 
 Following is the pseudo code:
-> Z <- matrix from file  
+'''
+Z <- matrix from file  
 W[N] <- 0, 0, ..., 0  
 added[N] <- false, false, ..., false  
 bestItems[M][N] <- 0,..,0; 0,..,0; ...  
->
-> for (f from 0 to M-1)  
+
+for (f from 0 to M-1)  
     list <- 0  
     for (i from 1 to N-1)  
         list <- i, based on Z[i][f] // binary insertion  
     bestItems[f] <- list  
->
-> for (_ from 0 to N-1)  
+
+for (_ from 0 to N-1)  
     updateBestItems()  
     bestFactory <- getBestFactory()
     item <- bestItems[bestFactory][0]
     added[item] <- true
     W[bestFactory] <- W[bestFactory] + Z[item][bestFactory]
     totalCost <- totalCost + W[bestFactory]
->
-> updateBestItems():  
+
+updateBestItems():  
     for (factoryQueue in bestItems)  
         while (added[factoryQueue[0]])
             factoryQueue.pop()
->
-> int getBestFactory():  
+
+int getBestFactory():  
     leastCost <- infinity
     indexLeastCost <- 0
     for (f from 0 to M)
@@ -101,3 +102,4 @@ bestItems[M][N] <- 0,..,0; 0,..,0; ...
             leastCost = Z[bestItems[f][0]][f] + W[f]
             indexLeastCost = f
     return indexLeastCost
+'''
