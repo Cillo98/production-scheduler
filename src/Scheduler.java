@@ -59,7 +59,7 @@ public class Scheduler {
         int totalCost = 0;
 
         // loop once per item
-        for (int[] __: Z) {
+        for (int[] ignored : Z) {
             // review which one is the best item to produce for each factory
             updateBestItems();
 
