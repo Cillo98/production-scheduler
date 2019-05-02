@@ -69,7 +69,7 @@ Once the input data is loaded, the algorithm takes the following steps for each 
     4. Output the average production cost for the items picked
 
 Following is the pseudo code:
-'''
+```
 Z <- matrix from file  
 W[N] <- 0, 0, ..., 0  
 added[N] <- false, false, ..., false  
@@ -102,4 +102,4 @@ int getBestFactory():
             leastCost = Z[bestItems[f][0]][f] + W[f]
             indexLeastCost = f
     return indexLeastCost
-'''
+```
