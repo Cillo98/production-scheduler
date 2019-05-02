@@ -58,7 +58,8 @@ public class Scheduler {
     private double test() {
         int totalCost = 0;
 
-        for (int i = 0; i < Z.length; i++) {
+        // loop once per item
+        for (int[] __: Z) {
             // review which one is the best item to produce for each factory
             updateBestItems();
 
@@ -81,25 +82,50 @@ public class Scheduler {
     private void generateQueues() {
         // for every factory
         for (int f = 0; f < Z[0].length; f++) {
-
             // make a sorted list of item indices
             LinkedList<Integer> list = new LinkedList<>();
             list.add(0);
 
+            // add all items
             for (int i = 1; i < Z.length; i++) {
-                int pos = 0;
-                while (pos < list.size()) {
-                    if (Z[list.get(pos)][f] < Z[i][f])
-                        pos++;
-                    else
-                        break;
-                }
-                list.add(pos, i);
+                insertInList(list, 0, list.size()-1, i, f);
             }
 
             // and put the list in the array of lists
             bestItems[f] = list;
         }
+    }
+
+    private void insertInList(LinkedList<Integer> list, int from, int to, int i, int f) {
+        int mid = (from + to) / 2;
+
+        if (list.size() == 1) {
+            if (Z[list.get(mid)][f] < Z[i][f])
+                list.addLast(i);
+            else
+                list.addFirst(i);
+        }
+
+        else if (from == to) {
+            if (Z[list.get(mid)][f] < Z[i][f])
+                list.add(mid+1, i);
+
+            // if less or equal to the number pointed, insert there
+            else
+                list.add(mid, i);
+        }
+
+        // mid item is smaller, add to second half of the list
+        else if (Z[list.get(mid)][f] < Z[i][f])
+            insertInList(list, mid+1, to, i, f);
+        
+        // mid item is larger, add to first half of the list
+        else if (Z[list.get(mid)][f] > Z[i][f])
+            insertInList(list, from, mid, i, f);
+        
+        // item costs are the same, add here
+        else 
+            list.add(mid, i);
     }
 
     private void updateBestItems() {
@@ -133,7 +159,7 @@ public class Scheduler {
             lines = Files.readAllLines(Paths.get(filename));
 
             for (int i = 0; i < lines.size(); i++) {
-                if (lines.get(i).isBlank())
+                if (lines.get(i).isEmpty())
                     testHead.add(i+1);
             }
         }
