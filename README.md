@@ -48,7 +48,7 @@ Example of the console output of the previous example:
   Test: 2	Average Cost: 1.333333  
   
 ## The solution
-Following is the algorithm designed to solve the problem with maximum efficiency.
+Following is the algorithm designed to solve the problem with maximum efficiency. The algorithm provides a time complexity of _O(N log N)_ and a space efficiency of _8(N\*M) + 4(N+M) + 16 bytes_.
 
 ### Algorithm
 Once the input data is loaded, the algorithm takes the following steps for each of the test cases:  
@@ -64,7 +64,8 @@ Once the input data is loaded, the algorithm takes the following steps for each 
     will return the index of the item that a factory can make in the fastest time  
 3. Pick one by one the item that can be produced in the least time. For each factory only the least-cost item
     is considered. The production cost of an item in factory is calculated as the sum of the production
-    cost of the item in the factory and the waiting time of the factory to produce the next item.  
+    cost of the item in the factory and the waiting time of the factory to produce the next item. 
+    _NOTE: before an item is picked, each list is popped until the head is not added yet to production_
 4. Output the average production cost for the items picked
 
 Following is the pseudo code:
@@ -102,3 +103,43 @@ int getBestFactory():
             indexLeastCost = f
     return indexLeastCost
 ```
+
+### Efficiency Analysis
+This algorithm's time complexity is analyzed by looking at the pseudocode and its space efficiency is analyzed by calculating the memory requirement of the implementation of the algorithm in Java.
+
+#### Time Complexity
+Dividing the pseudocode into chunks, the following number of operations per chunk can be found:
+
+1. Instantiate the variables needed by the algorithm: _N\*M + M + N + M_
+    - Z: _N\*M_  
+    - W: _M_
+    - added: _N_ 
+    - bestItems: _M_
+2. Generate the queues of best items (_bestItems_): _M*(N log N)_
+    - For each factory (_M_), build an ordered array of indices using Binary Insertion Sort (_N log N)
+3. Pick one by one the item that can be produced in the least time: _M_
+    - Update heads: _M_ (every time an item is produced, that item must be removed from the other _M-1_ factories)
+    - Pick best factory: _M_
+    - Update costs: _1_
+4. Output the average production cost for the items picked: _1_
+Putting them together, the total time complexity is _O( \[N\*M + M + N + M\] + \[M*(N log N)\] + \[M\] + \[1\] ) = O(M*(N log N))_.
+
+However, considering that _M_ has an upper constraint of 50: _M <= 50_, it can be inferred that the algorithm has an overall time complexity of **O(N log N)**.
+
+
+#### Space Efficiency
+The algorithm makes use of the following variables (in the format {name, type, size}):
+    - Z, int, _N x M_
+    - W, int, _M_ 
+    - added, int, _N_ 
+    - bestItems, LinkedList, _M_; LinkedList, int, _N_ ==> bestItems, int, _M x N_
+    - tests, int, 1
+    - totalCost, int, 1
+    - avg, double, 1
+
+Not considering extra costs related to object allocation in Java and knowing that an integer is 4 bytes and a double is 8 bytes, the total memory usage can be calculated as  
+_memory = 4 \* (N\*M) + 4 \* M + 4 \* N + 4 \* (N\*M) + 4 \* 1 + 4 \* 1 + 8 \* 1 =_  
+_= 4 \* (2\*N\*M + M + N + 2) + 8 =_ **8(N\*M) + 4(N+M) + 16 bytes**  
+
+For a large input, say _M = 50_ and _N = 1000_, the memory requirement is 404KB.
+
