@@ -125,7 +125,7 @@ Dividing the pseudocode into chunks, the following number of operations per chun
 Putting them together, the total time complexity is _O( \[N\*M + M + N + M\] + \[M*(N log N)\] + \[M\] + \[1\] ) = O(M*(N log N))_.
 
 However, considering that _M_ has an upper constraint of 50: _M <= 50_, it can be inferred that the algorithm has an overall time complexity of **O(N log N)**.
-
+![Time complexity graph](/time.png?raw=true "Time complexity")
 
 #### Space Efficiency
 The algorithm makes use of the following variables (in the format {name, type, size}):
@@ -142,4 +142,4 @@ _memory = 4 \* (N\*M) + 4 \* M + 4 \* N + 4 \* (N\*M) + 4 \* 1 + 4 \* 1 + 8 \* 1
 _= 4 \* (2\*N\*M + M + N + 2) + 8 =_ **8(N\*M) + 4(N+M) + 16 bytes**  
 
 For a large input, say _M = 50_ and _N = 1000_, the memory requirement is 404KB.
-
+![Space complexity graph](/space.png?raw=true "Sapce complexity")
