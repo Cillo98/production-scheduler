@@ -39,7 +39,7 @@ public class Scheduler {
 
                 // run the test
                 double avg = test();
-                System.out.printf("Test: %d\tAverage Cost: %.6f\n", test, avg);
+                System.out.printf("Test: %d\tAverage Cost: %.6f\n", test+1, avg);
             }
 
         } catch (IOException e) {
